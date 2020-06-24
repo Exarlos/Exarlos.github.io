@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>vimgolf001</title>
+    <url>/2020/05/11/vimgolf001/</url>
+    <content><![CDATA[<h1 id="vimgolf第一题"><a href="#vimgolf第一题" class="headerlink" title="vimgolf第一题"></a>vimgolf第一题</h1><p>[TOC]<br>目标是10步</p>
+<h2 id="题目"><a href="#题目" class="headerlink" title="题目-"></a>题目-</h2><p>prepend * to every non-blank line<br><a href="http://www.vimgolf.com/challenges/5e4dfcccaa2db400090b66c3" target="_blank" rel="noopener">http://www.vimgolf.com/challenges/5e4dfcccaa2db400090b66c3</a></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">gem install vimgolf</span><br><span class="line">vimgolf <span class="built_in">setup</span></span><br><span class="line">vimgolf <span class="built_in">put</span> <span class="number">5e4</span>dfcccaa2db400090b66c3</span><br></pre></td></tr></table></figure>
+
+<h2 id="Start-file"><a href="#Start-file" class="headerlink" title="Start file"></a>Start file</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Start file</span><br><span class="line"></span><br><span class="line">This is a</span><br><span class="line">very short</span><br><span class="line"></span><br><span class="line">file, but it is</span><br><span class="line">still</span><br><span class="line">full</span><br><span class="line"></span><br><span class="line">of</span><br><span class="line"></span><br><span class="line">surpises.</span><br></pre></td></tr></table></figure>
+
+<h2 id="End-file"><a href="#End-file" class="headerlink" title="End file"></a>End file</h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">*This is a</span><br><span class="line">*very short</span><br><span class="line"></span><br><span class="line">*file, but it is</span><br><span class="line">*still</span><br><span class="line">*full</span><br><span class="line"></span><br><span class="line">*of</span><br><span class="line"></span><br><span class="line">*surpises.</span><br></pre></td></tr></table></figure>
+
+<h2 id="思路和过程"><a href="#思路和过程" class="headerlink" title="思路和过程"></a>思路和过程</h2><ul>
+<li>vim退出</li>
+</ul>
+<p><strong>vim 保存退出用ZZ<br>或者:wq<br>:q是不保存退出<br>:q!放弃处理结果</strong></p>
+<ol>
+<li>第一次最差是20,没什么可说的</li>
+<li>第二次使用了视图模式ctrl+v然后G到最后,然后I来编辑-18步<br><code>&lt;C-V&gt;GI*&lt;Esc&gt;2jx4jx2jx:wq&lt;CR&gt;</code></li>
+<li><code>&lt;C-V&gt;GI*&lt;Esc&gt;3Gx7G.9G.ZZ</code> 16步骤</li>
+<li><code>:%s/^\ze\w/*&lt;CR&gt;ZZ</code> - 15步</li>
+<li><code>:%s/^\ze./*&lt;CR&gt;ZZ</code> - 14</li>
+<li>:<code>%s/^./*&amp;/&lt;CR&gt;ZZ</code> - 13</li>
+<li><code>:%s/^./*&amp;&lt;CR&gt;ZZ</code> - 12</li>
+<li><code>:%s/./*&amp;&lt;CR&gt;ZZ</code> - 11</li>
+<li><code>&lt;C-V&gt;GyPgvr*ZZ</code> - 冠军</li>
+</ol>
+<h2 id="答案"><a href="#答案" class="headerlink" title="答案"></a>答案</h2><ol>
+<li>第二次使用了视图模式ctrl+v然后G到最后,然后I来编辑-18步<br><code>&lt;C-V&gt;GI*&lt;Esc&gt;2jx4jx2jx:wq&lt;CR&gt;</code></li>
+<li><code>&lt;C-V&gt;GI*&lt;Esc&gt;3Gx7G.9G.ZZ</code> 16步骤</li>
+<li><code>:%s/^\ze\w/*&lt;CR&gt;ZZ</code> - 15步</li>
+<li><code>:%s/^\ze./*&lt;CR&gt;ZZ</code> - 14</li>
+<li>:<code>%s/^./*&amp;/&lt;CR&gt;ZZ</code> - 13</li>
+<li><code>:%s/^./*&amp;&lt;CR&gt;ZZ</code> - 13</li>
+<li><code>:%s/./*&amp;&lt;CR&gt;ZZ</code> - 11</li>
+<li><code>&lt;C-V&gt;GyPgvr*ZZ</code> - 冠军 10</li>
+</ol>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>三种视图模式</p>
+<p>字符选择模式　　v</p>
+<p>行选择模式　　　shift-v</p>
+<p>块选择模式　　　ctrl-v</p>
+<p>帮助　　加前缀v_，如 :help v_d</p>
+<p>在其中一种模式下可以用直接用上面的命令切换到另一模式</p>
+<p>在视图模式下编辑</p>
+<p>d　　删除选中的字符　　D　　删除选中字符的行</p>
+<p>y，c命令同理</p>
+<p>J　　将选中行合成一行，行这间用空格分隔　　gJ　　连接选中行并无空格分隔</p>
+<blockquote>
+<p>　将选中行缩进一个shiftwidth　　反之 &lt;</p>
+</blockquote>
+<p>在块选择模式下</p>
+<p>I　　插入，并且在<ESC>后，其他选中行的相应位置也会插入相同内容</p>
+<p>c，A命令有相类似的作用</p>
+<p>r　　将选中块中的字符全部替代为某个字符</p>
+<blockquote>
+<p>　将块向右移动一个shiftwidth　　反之 &lt;，如果空格数不足一个shiftwidth，它尽可能的移动</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>vim</category>
+        <category>vimgolf</category>
+      </categories>
+      <tags>
+        <tag>vim</tag>
+        <tag>vimgolf</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vimgolf002</title>
+    <url>/2020/05/13/vimgolf002/</url>
+    <content><![CDATA[<h2 id="vimgolf002-Simple-Practical-and-Common"><a href="#vimgolf002-Simple-Practical-and-Common" class="headerlink" title="vimgolf002-Simple, Practical, and Common"></a>vimgolf002-Simple, Practical, and Common</h2><h3 id="来源"><a href="#来源" class="headerlink" title="来源"></a>来源</h3><p>vimgolf put 55b18bbea9c2c30d04000001</p>
+<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">*temp var1 <span class="number">0</span></span><br><span class="line">*temp var2 <span class="string">"hi"</span></span><br><span class="line">*temp var3 <span class="number">-1</span></span><br><span class="line">*temp var4 <span class="number">42</span></span><br><span class="line">*temp var5 <span class="string">"asdf"</span></span><br><span class="line">*temp var6 <span class="number">0</span></span><br><span class="line"></span><br><span class="line">Simple things we <span class="keyword">do</span> all the time should be able to be done with very few keystrokes, but sometimes I <span class="built_in">find</span> something I need to <span class="keyword">do</span> makes me go, <span class="string">"There MUST be a better way."</span></span><br><span class="line"></span><br><span class="line">This challenge is just a simple movement <span class="keyword">and</span> entering <span class="built_in">text</span> at a certain place.</span><br><span class="line">-----</span><br><span class="line">*temp var1 <span class="number">0</span></span><br><span class="line">*temp var2 <span class="string">"hi"</span></span><br><span class="line">*temp var3 <span class="number">-1</span></span><br><span class="line">*temp var4 <span class="number">42</span></span><br><span class="line">*temp var5 <span class="string">"asdf"</span></span><br><span class="line">*temp var6 <span class="number">0</span></span><br><span class="line">*temp var7 <span class="number">11</span></span><br><span class="line"></span><br><span class="line">Simple things we <span class="keyword">do</span> all the time should be able to be done with very few keystrokes, but sometimes I <span class="built_in">find</span> something I need to <span class="keyword">do</span> makes me go, <span class="string">"There MUST be a better way."</span></span><br><span class="line"></span><br><span class="line">New <span class="built_in">text</span>.</span><br><span class="line"></span><br><span class="line">This challenge is just a simple movement <span class="keyword">and</span> entering <span class="built_in">text</span> at a certain place.</span><br></pre></td></tr></table></figure>
+
+<h3 id="答案"><a href="#答案" class="headerlink" title="答案"></a>答案</h3><p>最佳答案是22步骤:</p>
+<ol>
+<li><code>#Yp&lt;C-A&gt;l11.GONew t&lt;C-N&gt;&lt;C-N&gt;.&lt;CR&gt;&lt;Esc&gt;ZZ</code></li>
+<li>MYp<C-A>w11.GONew t<C-N><C-N>.<CR><Esc>ZZ</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li><strong>‘#’号码是往上找当前的单词,所以倒数走到了最后一个第六行开头</strong></li>
+<li>Y是复制一整行是yy的简写</li>
+<li><strong>c-a是有用的 数字+1,-1是ctrl-x</strong></li>
+<li>然后按一下l,往右走一下,然后11 .来重复</li>
+<li>G直接走到最后一行</li>
+<li>O在上面新建一行</li>
+</ul>
+]]></content>
+      <categories>
+        <category>vim</category>
+        <category>vimgolf</category>
+      </categories>
+      <tags>
+        <tag>vim</tag>
+        <tag>vimgolf</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>十年磨一剑</title>
+    <url>/2020/06/23/%E5%8D%81%E5%B9%B4%E7%A3%A8%E4%B8%80%E5%89%91/</url>
+    <content><![CDATA[<h1 id="十年磨一剑"><a href="#十年磨一剑" class="headerlink" title="十年磨一剑"></a>十年磨一剑</h1><p><a href="https://www.douban.com/note/339220850/" target="_blank" rel="noopener">https://www.douban.com/note/339220850/</a></p>
+<h2 id="1"><a href="#1" class="headerlink" title="1"></a>1</h2><p>从校队退役之后，每到下午四点钟都有一种坐立不安的感觉，惶惶然好像少了些什么。新英格兰十一月后便有小半年大雪封山，晨跑也难以执行。我每天不运动个把小时就浑身难受（我的阿宅闺蜜说她但凡运动了就一整天浑身难受），没有私车背着装备坐地铁去击剑馆又实在太麻烦，于是兴起去波士顿芭蕾学院报了成人课。<br>波士顿芭蕾学院隶属于波士顿芭蕾剧团，学员中不乏准职业舞者。那些十三四岁穿着雪白长袜的少女在镜前旋转跳跃，小脸上满满都是年轻的骄傲。待她们嬉笑着从练功房离开后便轮到我们这些老胳膊老腿的业余爱好者登场。同我一起上课的有旁边大学的学生，有职场白领，家庭妇女，甚至还有鸡皮鹤发的老爷爷老奶奶。换上舞鞋似乎消磨了大家之间年龄和阶级的差异，让我们如同那生活尚未开始的少年舞者一样面目相似。<br>有一天我耽搁了一会才回到更衣室，旁边有个胖胖的中年女人缓慢地套上旧毛衣阔腿裤，系上旅游鞋带，摇摇摆摆神情冷淡地关门而去。<br>我突然想起来刚才课上她就在我旁边，而我却没有认出她来。<br>走出明亮的芭蕾练功房，我们把现实一件一件穿回身上，臃肿地走回波士顿的寒冬里，他们不会知道，在这沉默肮脏的街道上，在层层叠叠斑斓羽绒服构成的人海中，在肥胖冷漠的家庭妇女办公职员中学教师之间藏了一个芭蕾舞者。</p>
+<p>我拎着舞鞋在雪地里深一脚浅一脚地走回家，电车停运真是这个城市最能让人窘迫地一件事情，我进了绿线旁一个一直路过但不曾造访的咖啡馆，打算点杯热巧克力暖暖手。<br>收银台打工的女孩突然开口说，你是wellesley佩剑队的主力对吗。<br>我抬头定睛看她的脸。<br>这超过了我日常在咖啡馆里“天气不错谢谢你不用客气美好一天”的对话范围。<br>我是波士顿大学的佩剑队员。<br>我记得她。我们在2011年新英格兰击剑锦标赛上交过手。<br>也许人海和现实并不如我想象的那样让所有面孔千篇一律，总会有人认出你——那些和你同样从事过并且热爱着那项运动的人。</p>
+<p>击剑的圈子很小，新英格兰赛事上常见熟面孔：某届奥运老将，美国国家队队员，某届奥运裁判都会露脸，而且还喜欢赛后和选手指点一二（可是比起来他们的指点我更想和他们打一局十五剑……）；我小时候在北京打少年赛的时候一些高居榜首的名字后来在重要赛事上都有看到。更多的名字只是消失不见。<br>这不是一个流行的运动，即便当中有谁成了世界顶级的击剑手，他／她也不会像网球或足球明星那样腰缠万贯受人瞩目。但我依然会记得他们，每一个人，每一个学校教练带出来的风格：cornell的蛇形步，tufts的旋剑击打进攻，brandeis的挑剑刺……不论他们去往何方。</p>
+<h2 id="2"><a href="#2" class="headerlink" title="2"></a>2</h2><p>好像所有的社交网站都被健身发烧友占领了，经常就会冒出来姑娘小伙对着镜子收腹提臀的半裸照，这样的傲人成果自然让人心痒，于是有很多人在下面跟贴：怎样练下腹啊怎样把屁股练翘又不把腿练粗……<br>我对于健身热潮并不怎么感冒，从心里我认为人体骨骼肌肉之精妙远远超过人类现在所能发明的任何健身甚至整形技术——信不信随你，我们远没有达到“指哪打哪”的水平，现在没有，未来很长一段时间之内也不会。诚然我们可以努力去优化自己的形体（降低脂肪含量，加强柔韧性，强化肌肉力量等等），但是“我要让大腿围低于xx公分”“我只想练臀部肌肉不想练腿”“我只想去掉大臂下面的脂肪但是不要练上面的肌肉”这样的目标未免可笑。让职业健美人士随意抨击我吧，我固执地认为人的形体并不是秀身材的相册中拼接的那样，人体不是八块腹肌胸大肌臀大肌肱二头肌的零散组合。肌肉骨骼之间丝缕相扣，它们不会彼此脱离单独存在，更不可能人为地抑此扬彼。<br>确实有很多人通过练器械的方式获得了健美漂亮的身材，如此实图证据在互联网上比比皆是，我很敬佩他们的毅力。但是有的时候我会想：我们欣赏一个人健美的身材是仅仅出于视觉上的享受吗？健美的身材是一个人协调能力和运动潜力的外在表现，而为了去“秀什么”而急功近利地恶补某些肌肉群是追求这样能力的结果却摒弃了其源头，多少有些本末倒置。<br>我所认识的职业运动员和舞蹈家似乎肌肉块头都没健美狂热爱好者那么壮硕，线条也不那么分明。视觉效果确实来得不够快也不够好，只是我更欣赏从有机使用中锻炼起来而不是通过器械重复而来的身体。曾住在我公寓旁边的健身教练胳膊比脑袋还粗，薄衬衫撑得满满（每次和他一起坐电梯都觉得电梯间格外小）。相反的，我总惊艳于一些除了强硕肌肉以外的东西——我无法忘怀在电车里的芭蕾舞者挺拔优雅仿佛舞台随她而在，退役的棒球运动员和他的爱犬玩耍时以一个出奇漂亮的弧线将球抛出，或是足球运动员在街边用足尖轻松挑起易拉罐——他们没人有夸张的肌肉，甚至上了年纪的人还有点小肚子，他们不是健美先生，不是性感辣妹，但那透露出他们曾经投身运动和舞蹈生涯的小细节让我觉得他们很美。<br>仔细算我练击剑断断续续将近十年，甚至从校队里退役都有一段时间了。可惜我不够努力，也不够有天分，这十年并没有给漂亮的身材和优雅的姿态，击剑给我留下的大概只有大家笑称的“只要桌上有个击剑运动员就不会有倾倒的水杯”。<br>水杯倾倒是一个缓慢的过程，你看那水液激起波澜突破平衡，就像是你在训练时做了千百遍的：在那手套从教练手中落下的毫秒之间爆发出一个弓步将它接住。<br>你伸手顺势接住那水杯放回桌上的一刻时间恢复正常运转，身边人啧啧称奇，杯中水有一个微妙的漩涡。<br>于是你笑笑，仿佛真的可以在那一瞬间草芥之人可以向时间和重力扳回一城。</p>
+<h2 id="3"><a href="#3" class="headerlink" title="3"></a>3</h2><p>芭蕾起源于对击剑的舞蹈诠释，我总以为那原因是击剑本身的观赏度实在不高。影视作品中经常让高帅富们拿着花剑像打佩剑一样劈砍还一边炫酷地上蹿下跳聊着自己那点破事。真实的击剑在外行人眼中就是两个穿得鼓鼓囊囊的人拿着根棍互相戳：<br>如果是花剑或者重剑——“好无聊啊，他们怎么都不出手的啊”<br>如果是佩剑——“怎么回事？打完了？为什么他赢了啊？”<br>我很难向不了解击剑的人解释两个花剑手来回击打对方的剑而不轻易发起进攻是在调控把握双方的节奏，一次冒失的进攻是徒然地把自己送到对方剑下；两个重剑手可能在最后的十几秒里都消极防御是因为在等加时赛；那些被外行人称为“又细又软”的剑体实际上是高韧度的钢条，在职业运动员强劲的腕力下可以瞬间从直的甩成了弯的。<br>我也不愿让他们失望，告诉他们其实真实的击剑场上没有佐罗电影里那样华丽的大幅劈砍跳跃。跌跌撞撞用蛮力拿着剑挥来挥去的大多是初学者，而高手过招胜负在毫厘之间，灯亮喊停，点到为止。</p>
+<p>无论是专业运动员还是业余爱好者，正确习惯的养成都很重要：大家往往都是私教课上被教练一个个动作纠正过去，挂上金属线一上场实战就又是张牙舞爪的老样子。我刚刚开始练击剑的时候是十三岁，和几个同龄的小伙伴一起蹲马步，为了步伐不变形。练弓步的时候，膝盖压过了足尖教练就一剑抽在腿上。一节课是满打满算的一个小时，打完就去操场跑二十圈，被套圈的人再罚五圈，套了别人圈的人减两圈——跑吐了去漱口回来接着跑……因为跑步、输剑或是被教练骂，我们几个好朋友当时都哭过鼻子。后来和朋友聊天，说现在剑馆里小孩子这样的练法早就被家长投诉了，但是也练不出来了。我在美国大学里校训的第一天被教练点出来，说弓步打得好，而我但凡弓步变形心里都一抽，觉得教练那剑条又要抽到腿上来了。在美国的四年里总觉得教练并没有在在国内练的时候严格，回国夏天训练的时候总被他们笑腕部动作不精细——“你这分明就是男佩的打法嘛”。<br>就像跳舞时如果想着：下一步要跳起，跳完之后要交叉步，然后是什么呢……一定会跳成一个木头人。我很怀疑武侠小说里面两个剑客巅峰对决之刻，见招拆招间忽见对方神情有异，想起该派系脉门所在，于是心生一计因对方上当并予以致命一击。更让人匪夷所思的是有人在劲敌当前生死一线之际竟然会灵魂出窍想起初恋的寄托师父的教诲甚至当场顿悟出制胜之策来，简直让人质疑这样不敬业的剑客是怎么当上绝顶高手的——小学生打群架都知道走神是要挨板砖的好吗……</p>
+<p>你的身体哪怕在接受专业训练后的很长一段时间里也都比你的大脑要聪明。当你告诉它：先抬腿，旋转，然后同时手臂平衡的时候，就像是一个小学生让大学教授根据老师布置的作业用图像法做加减乘除一样笨拙。很多时候，无论是运动还是舞蹈，闭上眼睛，跟着旋律，你的身体会自然而然地把它做得很好，而优秀的运动员和舞者也是将复杂地动作以超乎常人地自然流畅表现出来，只是那举重若轻背后往往是多年苦功，让一个动作通过反复纠正内化至不需要经过大脑指导便可以完美地再现出来：训练有素的芭蕾舞者只需要一个最简单的单腿旋转就足以证明为什么她可以是女主角而旁人只能是配角；一个优秀的击剑运动员面对对手最有利的优势并不是能做出漂亮的三次防守反击或是甩剑刺（对于佩剑来说，即便是在顶级赛事上很多得分也都是进攻反攻，或者一次防守反击）。一个入门的击剑手在两个星期里就可以学会基本的步伐和手部动作，然而在赛场上打出一个距离都大并且被对方格挡后可以及时收回的弓步或是做出一个漂亮精准不变形的转移，往往都是多年严苛训练的结果。<br>击剑的基础动作很简单，大概新手学习两个月之后就能掌握基本的步伐和手法。事实上，对于绝大部分职业击剑运动员来说，能够真正精通并且打得好的套路也就那么三五个。<br>我学击剑三个月后就被教练送去北京市的少年赛，我还记得当时的自己面对体校人高马大的初中生们急中生智，只一味往后退一边用剑乱比划，如果侥幸碰到了对方的剑就闭着眼睛往前打，竟然也误打误撞地得了好几个“防守还击”。<br>很多年之后，在麻省理工邀请赛上，我有幸和蝉联两届新英格兰佩剑冠军的选手对战，胜率渺茫，遇到难得的强敌，唯有放手一搏证明对方遇到你也不容易。那一场比赛输得意料之中，但是我激动异常——在对方的攻势下，我像十年前的自己一样选择等待对方发起进攻时的破绽，并且成功地防守还击得分——把十三岁时学的基本动作打磨成自己肢体记忆的一部分，我花了整整十年的时间。</p>
+<h2 id="4"><a href="#4" class="headerlink" title="4"></a>4</h2><p>击剑实在不是个流行的运动，即便在大城市里也很难找到剑馆，其中学员不是初学者就是刚刚比剑身高过一点的小孩子，写完这篇文章的初稿后我觉得自己大概从此以后是很少有时间能够继续这项运动了。<br>不料到了牛津之后，去了几次击剑试训，打了两次小组赛后被录入校队，从此日程表上又排满了南征北战——每次赴邀请赛我都觉得自己像是个下山的堂吉诃德，清晨四点背着沉沉的铠甲和长剑，迷迷糊糊地赶到集合的地方，在半睡半醒中看着车窗外静默的树木和小镇在烟雨中一一后退，巴士停下，你扛着剑包跟着人往前走，行装的重量加在睡意上，一步挨着另一步。<br>直到进了场地的那一瞬间才是猛地醒了，你环顾四周，有人在张贴比赛名册，有人在搬有人在跑道上热身，各个学校的队长们吆喝着自己的运动员去检录……<br>你不作声地打量他们的体格身高，留意他们在场边的热身赛，心里大致掂量他们的速度和习惯——也许有些狡猾，但是全场的每一个人都在这样做——而直到他们换上自己的剑服你才能完全确定哪些人将会是你在这一场比赛中的对手，如果你足够细心，上场之前大概已经可以看出几个人的底细：谁是新手谁是老将，谁被教练刚刚换了剑种，还有谁是左撇子。<br>大多数时候击剑比赛都是在体育馆里，除了在英国很不可预测…牛津和帝国理工的邀请赛是在某个礼堂里进行的，主办方竟然在挂满油画并且摆满新古典主义雕塑的大厅里拉开两条剑道，那一刻真是仿佛到了中世纪进行决斗——幕布升起，满满烛光闪耀，你和你的对手分别走上剑道，头顶是高高腾起的穹顶，而那四周的油画和陈列台上，你的观众是凯撒圣母玛利亚亚里士多德，他们神情各异，用目光和手指示意着各个不同的方向……</p>
+<h2 id="5"><a href="#5" class="headerlink" title="5"></a>5</h2><p>踏上剑道，戴上护面，敬裁判，敬对手，之后心中总是一片空白。<br>此时你的肾上腺激素狂飙，毛孔张开寒毛竖起瞳孔缩小，每一寸肌肉都蓄势待发。你知道裁判手落之际一切都将启动。你的步伐紧凑绵密，酝酿着一个爆发的弓步，你格开对方的剑，剑柄重重震动虎口——对战双方都是拉满的弓。<br>于是你抽手吊剑，剑尖在击中他护手盘的一刻被强力折弯，弹中他的手肘如行云流水。巨大的喜悦感在你心中炸裂，队友的呐喊裁判的指令在背景音中淡成一片，你只知道这一刻之美妙之不可言，它超过了打麻将连胡三手牌超过了暴雨天里的鸡汤面和盛夏酷暑的冰啤酒，好过拿offer，好过白日梦，好过人世间最好之事，甚至有那么一瞬，你觉得它好过自由，好过生命。<br>而尝过一次这滋味后，你便会为了它去付出成百上千个孤独的下午，去练习那个吊手刺，直到肌肉酸软，直到被汗水浸透。<br>那是我少女时代每一个暑假的下午，十三岁，十四岁，十五岁，十六岁，在剑馆里大汗淋漓地练静蹲，弓步，劈砍。靶人的旁边被人玩笑式地贴了一张海报，上面写着：生活就是一个弓步，又一个弓步。<br>许多年前的我劈叉压弓步的时候痛得咬着牙看着这句话在心里读了很多遍只是为了读点什么让那一分一秒过得快点。<br>而我至今都记着那句话，并且如此相信着。</p>
+]]></content>
+      <categories>
+        <category>文章</category>
+      </categories>
+      <tags>
+        <tag>文章</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>assert是什么</title>
+    <url>/2020/06/24/assert%E6%98%AF%E4%BB%80%E4%B9%88/</url>
+    <content><![CDATA[<ul>
+<li>assert的头文件在&lt;assert.h&gt;里</li>
+<li>assert只有在debug模式生效</li>
+<li><code>#define NDEBUG assert</code> 在头文件前面添加这个,可以使assert失效</li>
+<li><code>#define DEBUG</code> 可以重新生效</li>
+</ul>
+<h2 id="assert的用法"><a href="#assert的用法" class="headerlink" title="assert的用法"></a>assert的用法</h2><p>assert是宏，而不是函数。它的原型定义在头文件 assert.h 中：</p>
+<p><code>void assert( int expression );</code></p>
+<p>宏 assert 经常用于在函数开始处检验传入参数的合法性，可以将其看作是异常处理的一种高级形式。assert 的作用是先计算表达式expression，然后判断：</p>
+<blockquote>
+<p><strong>如果表达式值为假，那么它先向stderr打印错误信息，然后通过调用 abort 来终止程序运行。</strong><br><strong>如果表达式值为真，继续运行后面的程序。</strong></p>
+</blockquote>
+<p>注意：assert只在 DEBUG 下生效，在调试结束后，可以通过在#include &lt;assert.h&gt;语句之前插入#define NDEBUG来禁用assert调用。</p>
+<h2 id="assert什么时候使用呢"><a href="#assert什么时候使用呢" class="headerlink" title="assert什么时候使用呢"></a>assert什么时候使用呢</h2><p>比如说手写strcpy函数的时候.</p>
+]]></content>
+      <categories>
+        <category>coding</category>
+        <category>c++</category>
+      </categories>
+      <tags>
+        <tag>coding</tag>
+        <tag>c++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>01-堆,栈,RAII</title>
+    <url>/2020/06/23/01-%E5%A0%86-%E6%A0%88-RAII/</url>
+    <content><![CDATA[<h2 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h2>]]></content>
+      <categories>
+        <category>coding</category>
+        <category>c++</category>
+      </categories>
+      <tags>
+        <tag>coding</tag>
+        <tag>c++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>strcpy/strlen/strcat/strcmp的实现</title>
+    <url>/2020/06/24/strcpy-strlen-strcat-strcmp%E7%9A%84%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<h2 id="1-字符串拷贝strcpy"><a href="#1-字符串拷贝strcpy" class="headerlink" title="1. 字符串拷贝strcpy"></a>1. 字符串拷贝strcpy</h2><p>函数strcpy的原型是<code>char* strcpy(char* des , const char* src)</code>，des 和 src 所指内存区域不可以重叠且 des 必须有足够的空间来容纳 src 的字符串。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">char</span>* <span class="title">strcpy</span><span class="params">(<span class="keyword">char</span>* des, <span class="keyword">const</span> <span class="keyword">char</span>* src)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> assert((des!=<span class="literal">NULL</span>) &amp;&amp; (src!=<span class="literal">NULL</span>));</span><br><span class="line"> <span class="keyword">char</span> *address = des;</span><br><span class="line"> <span class="keyword">while</span>((*des++ = *src++) != <span class="string">'\0'</span>)</span><br><span class="line">  ;</span><br><span class="line"> <span class="keyword">return</span> address;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>要知道 strcpy 会拷贝’\0’，还有要注意：</p>
+<blockquote>
+<p>源指针所指的字符串内容是不能修改的，因此应该声明为 const 类型。<br>要判断源指针和目的指针为空的情况，思维要严谨，这里使用assert（见文末）。<br>要用一个临时变量保存目的串的首地址，最后返回这个首地址。<br>函数返回 char* 的目的是为了支持链式表达式，即strcpy可以作为其他函数的实参。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>coding</category>
+        <category>c++</category>
+      </categories>
+      <tags>
+        <tag>coding</tag>
+        <tag>c++</tag>
+      </tags>
+  </entry>
+</search>
