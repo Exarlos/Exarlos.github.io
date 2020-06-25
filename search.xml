@@ -166,6 +166,27 @@
 <blockquote>
 <p>源指针所指的字符串内容是不能修改的，因此应该声明为 const 类型。<br>要判断源指针和目的指针为空的情况，思维要严谨，这里使用assert（见文末）。<br>要用一个临时变量保存目的串的首地址，最后返回这个首地址。<br>函数返回 char* 的目的是为了支持链式表达式，即strcpy可以作为其他函数的实参。</p>
 </blockquote>
+<h2 id="2-字符串长度strlen"><a href="#2-字符串长度strlen" class="headerlink" title="2. 字符串长度strlen"></a>2. 字符串长度strlen</h2><p>函数strlen的原型是<code>size_t strlen(const char *s)</code>，其中 <code>size_t</code> 就是 <code>unsigned int</code>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">strlen</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> assert(str != <span class="literal">NULL</span>);</span><br><span class="line"> <span class="keyword">int</span> len = <span class="number">0</span>;</span><br><span class="line"> <span class="keyword">while</span>((*str++) != <span class="string">'\0'</span>)</span><br><span class="line">  ++len;</span><br><span class="line"> <span class="keyword">return</span> len;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>strlen 与 sizeof 的区别：</p>
+<ul>
+<li><p>sizeof是运算符，strlen是库函数。</p>
+</li>
+<li><p>sizeof可以用类型、变量做参数，而strlen只能用 char* 变量做参数，且必须以\0结尾。</p>
+</li>
+<li><p>sizeof是在编译的时候计算类型或变量所占内存的大小，而strlen的结果要在运行的时候才能计算出来，用来计算字符串的长度。</p>
+</li>
+<li><p>数组做sizeof的参数不退化，传递给strlen就退化为指针了。</p>
+</li>
+</ul>
+<h2 id="3-字符串连接strcat"><a href="#3-字符串连接strcat" class="headerlink" title="3. 字符串连接strcat"></a>3. 字符串连接strcat</h2><p>函数<strong>strcat</strong>的原型是<code>char* strcat(char* des, char* src)</code>，<strong>des</strong> 和 <strong>src</strong> 所指内存区域不可以重叠且 <strong>des</strong> 必须有足够的空间来容纳 <strong>src</strong> 的字符串。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">char</span>* <span class="title">strcat</span><span class="params">(<span class="keyword">char</span>* des, <span class="keyword">const</span> <span class="keyword">char</span>* src)</span>   <span class="comment">// const表明为输入参数</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> assert((des!=<span class="literal">NULL</span>) &amp;&amp; (src!=<span class="literal">NULL</span>));</span><br><span class="line"> <span class="keyword">char</span>* address = des;</span><br><span class="line"> <span class="keyword">while</span>(*des != <span class="string">'\0'</span>)  <span class="comment">// 移动到字符串末尾</span></span><br><span class="line">  ++des;</span><br><span class="line"> <span class="keyword">while</span>(*des++ = *src++)</span><br><span class="line">  ;</span><br><span class="line"> <span class="keyword">return</span> address;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-字符串比较strcmp"><a href="#4-字符串比较strcmp" class="headerlink" title="4. 字符串比较strcmp"></a>4. 字符串比较strcmp</h2><p>函数<code>strcmp</code>的原型是<code>int strcmp(const char *s1,const char *s2)</code>。</p>
+<p>若s1==s2，返回零；<br>若s1&gt;s2，返回正数；<br>若s1&lt;s2，返回负数。</p>
+<p>两个字符串自左向右逐个字符相比（按ASCII值大小相比较），直到出现不同的字符或遇\0为止。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;assert.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">strcmp</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *s1,<span class="keyword">const</span> <span class="keyword">char</span> *s2)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> assert((s1!=<span class="literal">NULL</span>) &amp;&amp; (s2!=<span class="literal">NULL</span>));</span><br><span class="line">    <span class="keyword">while</span>(*s1 == *s2)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(*s1 == <span class="string">'\0'</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        ++s1;</span><br><span class="line">        ++s2;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> *s1 - *s2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>coding</category>
