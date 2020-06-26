@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="coding,c++," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="[TOC] 智能指针unique_ptr unique_ptr实际上并不是指针.而是一个对象 不要用delete 也没有++,–等操作,避免越界 这个一定要初始化之后再用  用法1234567unique_ptr&lt;int&gt; ptr1(new int(10));      &#x2F;&#x2F; int智能指针assert(*ptr1 &#x3D; 10);                     &#x2F;&#x2F; 可以使用*">
+<meta property="og:type" content="article">
+<meta property="og:title" content="08_智能指针smart_ptr">
+<meta property="og:url" content="http://yoursite.com/2020/06/25/08-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88smart-ptr/index.html">
+<meta property="og:site_name" content="塔希里亚旅行笔记">
+<meta property="og:description" content="[TOC] 智能指针unique_ptr unique_ptr实际上并不是指针.而是一个对象 不要用delete 也没有++,–等操作,避免越界 这个一定要初始化之后再用  用法1234567unique_ptr&lt;int&gt; ptr1(new int(10));      &#x2F;&#x2F; int智能指针assert(*ptr1 &#x3D; 10);                     &#x2F;&#x2F; 可以使用*">
+<meta property="article:published_time" content="2020-06-25T09:17:20.000Z">
+<meta property="article:modified_time" content="2020-06-25T11:05:42.603Z">
+<meta property="article:author" content="Exarlos">
+<meta property="article:tag" content="coding">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/25/08-智能指针smart-ptr/"/>
+
+
+
+
+
+  <title>08_智能指针smart_ptr | 塔希里亚旅行笔记</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">塔希里亚旅行笔记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">艾克萨罗斯</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/25/08-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88smart-ptr/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Exarlos">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="塔希里亚旅行笔记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">08_智能指针smart_ptr</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-25T17:17:20+08:00">
+                2020-06-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/coding/" itemprop="url" rel="index">
+                    <span itemprop="name">coding</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/coding/c/" itemprop="url" rel="index">
+                    <span itemprop="name">c++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>[TOC]</p>
+<h2 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h2><h2 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h2><ul>
+<li>unique_ptr实际上并不是指针.而是一个对象</li>
+<li>不要用delete</li>
+<li>也没有++,–等操作,避免越界</li>
+<li>这个一定要初始化之后再用</li>
+</ul>
+<h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">unique_ptr</span>&lt;<span class="keyword">int</span>&gt; <span class="title">ptr1</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">10</span>))</span></span>;      <span class="comment">// int智能指针</span></span><br><span class="line">assert(*ptr1 = <span class="number">10</span>);                     <span class="comment">// 可以使用*取内容</span></span><br><span class="line">assert(ptr1 != <span class="literal">nullptr</span>);                <span class="comment">// 可以判断是否为空指针</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">unique_ptr</span>&lt;<span class="built_in">string</span>&gt; <span class="title">ptr2</span><span class="params">(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">"hello"</span>))</span></span>;  <span class="comment">// string智能指针</span></span><br><span class="line">assert(*ptr2 == <span class="string">"hello"</span>);                <span class="comment">// 可以使用*取内容</span></span><br><span class="line">assert(ptr2-&gt;<span class="built_in">size</span>() == <span class="number">5</span>);               <span class="comment">// 可以使用-&gt;调用成员函数</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="make-unique-来强制初始化"><a href="#make-unique-来强制初始化" class="headerlink" title="make_unique()来强制初始化"></a>make_unique()来强制初始化</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> ptr3 = make_unique&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);               <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(ptr3 &amp;&amp; *ptr3 == <span class="number">42</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr4 = make_unique&lt;<span class="built_in">string</span>&gt;(<span class="string">"god of war"</span>);  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(!ptr4-&gt;empty());</span><br></pre></td></tr></table></figure>
+
+<h3 id="unique-ptr的所有权"><a href="#unique-ptr的所有权" class="headerlink" title="unique_ptr的所有权"></a>unique_ptr的所有权</h3><p>指针的所有权是“唯一”的，不允许共享，任何时候只能有一个“人”持有它。<br>为了实现这个目的，unique_ptr应用了C++的“转移”（move）语义，同时禁止了拷贝赋值，所以，在向另一个unique_ptr赋值的时候，要特别留意，必须用std::move()函数显式地声明所有权转移。<br>赋值操作之后，指针的所有权就被转走了，原来的unique_ptr变成了空指针，新的unique_ptr接替了管理权，保证所有权的唯一性：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> ptr1 = make_unique&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);    <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(ptr1 &amp;&amp; *ptr1 == <span class="number">42</span>);         <span class="comment">// 此时智能指针有效</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr2 = <span class="built_in">std</span>::<span class="built_in">move</span>(ptr1);         <span class="comment">// 使用move()转移所有权</span></span><br><span class="line">assert(!ptr1 &amp;&amp; ptr2);               <span class="comment">// ptr1变成了空指针</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="shared-ptr"><a href="#shared-ptr" class="headerlink" title="shared_ptr"></a>shared_ptr</h2><h3 id="shared-ptr用法"><a href="#shared-ptr用法" class="headerlink" title="shared_ptr用法"></a>shared_ptr用法</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; <span class="title">ptr1</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">10</span>))</span></span>;     <span class="comment">// int智能指针</span></span><br><span class="line">assert(*ptr1 = <span class="number">10</span>);                    <span class="comment">// 可以使用*取内容</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;<span class="built_in">string</span>&gt; <span class="title">ptr2</span><span class="params">(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">"hello"</span>))</span></span>;  <span class="comment">// string智能指针</span></span><br><span class="line">assert(*ptr2 == <span class="string">"hello"</span>);                      <span class="comment">// 可以使用*取内容</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr3 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(ptr3 &amp;&amp; *ptr3 == <span class="number">42</span>);       <span class="comment">// 可以判断是否为空指针</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr4 = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="string">"zelda"</span>);  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(!ptr4-&gt;empty());                   <span class="comment">// 可以使用-&gt;调用成员函数</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="所有权"><a href="#所有权" class="headerlink" title="所有权"></a>所有权</h3><p>它的所有权是可以被安全共享的，也就是说支持拷贝赋值，允许被多个“人”同时持有，就像原始指针一样。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> ptr1 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);    <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(ptr1 &amp;&amp; ptr1.unique() );     <span class="comment">// 此时智能指针有效且唯一</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr2 = ptr1;                  <span class="comment">// 直接拷贝赋值，不需要使用move()</span></span><br><span class="line">assert(ptr1 &amp;&amp; ptr2);              <span class="comment">// 此时两个智能指针均有效</span></span><br><span class="line"></span><br><span class="line">assert(ptr1 == ptr2);             <span class="comment">// shared_ptr可以直接比较</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 两个智能指针均不唯一，且引用计数为2</span></span><br><span class="line">assert(!ptr1.unique() &amp;&amp; ptr1.use_count() == <span class="number">2</span>);</span><br><span class="line">assert(!ptr2.unique() &amp;&amp; ptr2.use_count() == <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><p>循环引用-把shared_ptr作为类成员的时候最容易出现，典型的例子就是链表节点。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span> <span class="title">final</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">using</span> this_type     = Node;</span><br><span class="line">    <span class="keyword">using</span> shared_type   = <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;this_type&gt;;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    shared_type     next;      <span class="comment">// 使用智能指针来指向下一个节点</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> n1 = make_shared&lt;Node&gt;();   <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line"><span class="keyword">auto</span> n2 = make_shared&lt;Node&gt;();   <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line"></span><br><span class="line">assert(n1.use_count() == <span class="number">1</span>);    <span class="comment">// 引用计数为1</span></span><br><span class="line">assert(n2.use_count() == <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">n1-&gt;next = n2;                 <span class="comment">// 两个节点互指，形成了循环引用</span></span><br><span class="line">n2-&gt;next = n1;</span><br><span class="line"></span><br><span class="line">assert(n1.use_count() == <span class="number">2</span>);    <span class="comment">// 引用计数为2</span></span><br><span class="line">assert(n2.use_count() == <span class="number">2</span>);    <span class="comment">// 无法减到0，无法销毁，导致内存泄漏</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="weak-ptr"><a href="#weak-ptr" class="headerlink" title="weak_ptr"></a>weak_ptr</h2><p>weak_ptr顾名思义，功能很“弱”。它专门为打破循环引用而设计，只观察指针，不会增加引用计数（弱引用），但在需要的时候，可以调用成员函数lock()，获取shared_ptr（强引用）。</p>
+<p>刚才的例子里，只要你改用weak_ptr，循环引用的烦恼就会烟消云散：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span> <span class="title">final</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">using</span> this_type     = Node;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注意这里，别名改用weak_ptr</span></span><br><span class="line">    <span class="keyword">using</span> shared_type   = <span class="built_in">std</span>::weak_ptr&lt;this_type&gt;;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    shared_type     next;    <span class="comment">// 因为用了别名，所以代码不需要改动</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> n1 = make_shared&lt;Node&gt;();  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line"><span class="keyword">auto</span> n2 = make_shared&lt;Node&gt;();  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line"></span><br><span class="line">n1-&gt;next = n2;             <span class="comment">// 两个节点互指，形成了循环引用</span></span><br><span class="line">n2-&gt;next = n1;</span><br><span class="line"></span><br><span class="line">assert(n1.use_count() == <span class="number">1</span>);    <span class="comment">// 因为使用了weak_ptr，引用计数为1</span></span><br><span class="line">assert(n2.use_count() == <span class="number">1</span>);   <span class="comment">// 打破循环引用，不会导致内存泄漏</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!n1-&gt;next.expired()) &#123;     <span class="comment">// 检查指针是否有效</span></span><br><span class="line">    <span class="keyword">auto</span> ptr = n1-&gt;next.lock();  <span class="comment">// lock()获取shared_ptr</span></span><br><span class="line">    assert(ptr == n2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>智能指针是代理模式的具体应用，它使用RAII技术代理了裸指针，能够自动释放内存，无需程序员干预，所以被称为“智能指针”。</li>
+<li>如果指针是“独占”使用，就应该选择unique_ptr，它为裸指针添加了很多限制，更加安全。</li>
+<li>如果指针是“共享”使用，就应该选择shared_ptr，它的功能非常完善，用法几乎与原始指针一样。</li>
+<li>应当使用工厂函数make_unique()、make_shared()来创建智能指针，强制初始化，而且还能使用auto来简化声明。</li>
+<li>shared_ptr有少量的管理成本，也会引发一些难以排查的错误，所以不要过度使用。</li>
+</ol>
+<p>我还有一个很重要的建议：</p>
+<p>既然你已经理解了智能指针，就尽量不要再使用裸指针、new和delete来操作内存了。</p>
+<p>如果严格遵守这条建议，用好unique_ptr、shared_ptr，那么，你的程序就不可能出现内存泄漏.</p>
+<h2 id="作业"><a href="#作业" class="headerlink" title="作业"></a>作业</h2><ul>
+<li>你觉得unique_ptr和shared_ptr的区别有哪些？列举一下。</li>
+<li>你觉得应该如何在程序里“消灭”new和delete？</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/coding/" rel="tag"># coding</a>
+          
+            <a href="/tags/c/" rel="tag"># c++</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/25/const-volatile-mutable/" rel="next" title="const,volatile,mutable">
+                <i class="fa fa-chevron-left"></i> const,volatile,mutable
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/25/lambda%E7%94%A8%E5%9C%A8%E5%93%AA%E9%87%8C/" rel="prev" title="lambda用在哪里?">
+                lambda用在哪里? <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Exarlos</p>
+              <p class="site-description motion-element" itemprop="description">世界上只有低级的法师，没有低级的法术！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#智能指针"><span class="nav-number">1.</span> <span class="nav-text">智能指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unique-ptr"><span class="nav-number">2.</span> <span class="nav-text">unique_ptr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#用法"><span class="nav-number">2.1.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#make-unique-来强制初始化"><span class="nav-number">2.2.</span> <span class="nav-text">make_unique()来强制初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unique-ptr的所有权"><span class="nav-number">2.3.</span> <span class="nav-text">unique_ptr的所有权</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shared-ptr"><span class="nav-number">3.</span> <span class="nav-text">shared_ptr</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#shared-ptr用法"><span class="nav-number">3.1.</span> <span class="nav-text">shared_ptr用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#所有权"><span class="nav-number">3.2.</span> <span class="nav-text">所有权</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意点"><span class="nav-number">3.3.</span> <span class="nav-text">注意点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#weak-ptr"><span class="nav-number">4.</span> <span class="nav-text">weak_ptr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作业"><span class="nav-number">6.</span> <span class="nav-text">作业</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Exarlos</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

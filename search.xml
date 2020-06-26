@@ -146,7 +146,23 @@
   <entry>
     <title>01-堆,栈,RAII</title>
     <url>/2020/06/23/01-%E5%A0%86-%E6%A0%88-RAII/</url>
-    <content><![CDATA[<h2 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h2>]]></content>
+    <content><![CDATA[<p>[TOC]</p>
+<h2 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h2><h2 id="RAII"><a href="#RAII" class="headerlink" title="RAII"></a>RAII</h2><h3 id="RAII的基本用法"><a href="#RAII的基本用法" class="headerlink" title="RAII的基本用法"></a>RAII的基本用法</h3><p>在析构函数里做必要的清理工作，这就是 RAII 的基本用法。这种清理并不限于释放内存，也可以是：</p>
+<ul>
+<li>关闭文件（fstream 的析构就会这么做）</li>
+<li>释放同步锁</li>
+<li>释放其他重要的系统资源</li>
+</ul>
+<hr>
+<h3 id="RAII是为什么-没太明白"><a href="#RAII是为什么-没太明白" class="headerlink" title="RAII是为什么(没太明白)"></a>RAII是为什么(没太明白)</h3><p>C++ 支持将对象存储在栈上面。但是，在很多情况下，对象不能，或不应该，存储在栈上。比如：</p>
+<p>对象很大；<br>对象的大小在编译时不能确定；<br>对象是函数的返回值，但由于特殊的原因，不应使用对象的值返回。</p>
+<p>常见情况之一是，在工厂方法或其他面向对象编程的情况下，返回值类型是基类。下面的例子，是对工厂方法的简单演示：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="class"><span class="keyword">class</span> <span class="title">shape_type</span> &#123;</span></span><br><span class="line">  <span class="built_in">circle</span>,</span><br><span class="line">  triangle,</span><br><span class="line">  rectangle,</span><br><span class="line">  …</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">shape</span> &#123;</span> … &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">circle</span> :</span> <span class="keyword">public</span> shape &#123; … &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">triangle</span> :</span> <span class="keyword">public</span> shape &#123; … &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">rectangle</span> :</span> <span class="keyword">public</span> shape &#123; … &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">shape* <span class="title">create_shape</span><span class="params">(shape_type type)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  …</span><br><span class="line">  <span class="keyword">switch</span> (type) &#123;</span><br><span class="line">  <span class="keyword">case</span> shape_type::<span class="built_in">circle</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">circle</span>(…);</span><br><span class="line">  <span class="keyword">case</span> shape_type::triangle:</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> triangle(…);</span><br><span class="line">  <span class="keyword">case</span> shape_type::rectangle:</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> rectangle(…);</span><br><span class="line">  …</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们怎样才能确保，在使用 create_shape 的返回值时不会发生内存泄漏呢？</p>
+<p>答案就在析构函数和它的栈展开行为上。我们只需要把这个返回值放到一个本地变量里，并确保其析构函数会删除该对象即可。一个简单的实现如下所示：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">shape_wrapper</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">explicit</span> <span class="title">shape_wrapper</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    shape* ptr = <span class="literal">nullptr</span>)</span></span></span><br><span class="line"><span class="function">    : <span class="title">ptr_</span><span class="params">(ptr)</span> </span>&#123;&#125;</span><br><span class="line">  ~shape_wrapper()</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">delete</span> ptr_;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function">shape* <span class="title">get</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> ptr_; &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  shape* ptr_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  …</span><br><span class="line">  <span class="function">shape_wrapper <span class="title">ptr_wrapper</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    create_shape(…))</span></span>;</span><br><span class="line">  …</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
       <categories>
         <category>coding</category>
         <category>c++</category>
@@ -198,6 +214,257 @@
       <tags>
         <tag>coding</tag>
         <tag>c++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>08_智能指针smart_ptr</title>
+    <url>/2020/06/25/08-%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88smart-ptr/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<h2 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h2><h2 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h2><ul>
+<li>unique_ptr实际上并不是指针.而是一个对象</li>
+<li>不要用delete</li>
+<li>也没有++,–等操作,避免越界</li>
+<li>这个一定要初始化之后再用</li>
+</ul>
+<h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="built_in">unique_ptr</span>&lt;<span class="keyword">int</span>&gt; <span class="title">ptr1</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">10</span>))</span></span>;      <span class="comment">// int智能指针</span></span><br><span class="line">assert(*ptr1 = <span class="number">10</span>);                     <span class="comment">// 可以使用*取内容</span></span><br><span class="line">assert(ptr1 != <span class="literal">nullptr</span>);                <span class="comment">// 可以判断是否为空指针</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">unique_ptr</span>&lt;<span class="built_in">string</span>&gt; <span class="title">ptr2</span><span class="params">(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">"hello"</span>))</span></span>;  <span class="comment">// string智能指针</span></span><br><span class="line">assert(*ptr2 == <span class="string">"hello"</span>);                <span class="comment">// 可以使用*取内容</span></span><br><span class="line">assert(ptr2-&gt;<span class="built_in">size</span>() == <span class="number">5</span>);               <span class="comment">// 可以使用-&gt;调用成员函数</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="make-unique-来强制初始化"><a href="#make-unique-来强制初始化" class="headerlink" title="make_unique()来强制初始化"></a>make_unique()来强制初始化</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> ptr3 = make_unique&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);               <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(ptr3 &amp;&amp; *ptr3 == <span class="number">42</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr4 = make_unique&lt;<span class="built_in">string</span>&gt;(<span class="string">"god of war"</span>);  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(!ptr4-&gt;empty());</span><br></pre></td></tr></table></figure>
+
+<h3 id="unique-ptr的所有权"><a href="#unique-ptr的所有权" class="headerlink" title="unique_ptr的所有权"></a>unique_ptr的所有权</h3><p>指针的所有权是“唯一”的，不允许共享，任何时候只能有一个“人”持有它。<br>为了实现这个目的，unique_ptr应用了C++的“转移”（move）语义，同时禁止了拷贝赋值，所以，在向另一个unique_ptr赋值的时候，要特别留意，必须用std::move()函数显式地声明所有权转移。<br>赋值操作之后，指针的所有权就被转走了，原来的unique_ptr变成了空指针，新的unique_ptr接替了管理权，保证所有权的唯一性：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> ptr1 = make_unique&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);    <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(ptr1 &amp;&amp; *ptr1 == <span class="number">42</span>);         <span class="comment">// 此时智能指针有效</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr2 = <span class="built_in">std</span>::<span class="built_in">move</span>(ptr1);         <span class="comment">// 使用move()转移所有权</span></span><br><span class="line">assert(!ptr1 &amp;&amp; ptr2);               <span class="comment">// ptr1变成了空指针</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="shared-ptr"><a href="#shared-ptr" class="headerlink" title="shared_ptr"></a>shared_ptr</h2><h3 id="shared-ptr用法"><a href="#shared-ptr用法" class="headerlink" title="shared_ptr用法"></a>shared_ptr用法</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; <span class="title">ptr1</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">10</span>))</span></span>;     <span class="comment">// int智能指针</span></span><br><span class="line">assert(*ptr1 = <span class="number">10</span>);                    <span class="comment">// 可以使用*取内容</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">shared_ptr</span>&lt;<span class="built_in">string</span>&gt; <span class="title">ptr2</span><span class="params">(<span class="keyword">new</span> <span class="built_in">string</span>(<span class="string">"hello"</span>))</span></span>;  <span class="comment">// string智能指针</span></span><br><span class="line">assert(*ptr2 == <span class="string">"hello"</span>);                      <span class="comment">// 可以使用*取内容</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr3 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(ptr3 &amp;&amp; *ptr3 == <span class="number">42</span>);       <span class="comment">// 可以判断是否为空指针</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr4 = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="string">"zelda"</span>);  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(!ptr4-&gt;empty());                   <span class="comment">// 可以使用-&gt;调用成员函数</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="所有权"><a href="#所有权" class="headerlink" title="所有权"></a>所有权</h3><p>它的所有权是可以被安全共享的，也就是说支持拷贝赋值，允许被多个“人”同时持有，就像原始指针一样。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> ptr1 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);    <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line">assert(ptr1 &amp;&amp; ptr1.unique() );     <span class="comment">// 此时智能指针有效且唯一</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> ptr2 = ptr1;                  <span class="comment">// 直接拷贝赋值，不需要使用move()</span></span><br><span class="line">assert(ptr1 &amp;&amp; ptr2);              <span class="comment">// 此时两个智能指针均有效</span></span><br><span class="line"></span><br><span class="line">assert(ptr1 == ptr2);             <span class="comment">// shared_ptr可以直接比较</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 两个智能指针均不唯一，且引用计数为2</span></span><br><span class="line">assert(!ptr1.unique() &amp;&amp; ptr1.use_count() == <span class="number">2</span>);</span><br><span class="line">assert(!ptr2.unique() &amp;&amp; ptr2.use_count() == <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><p>循环引用-把shared_ptr作为类成员的时候最容易出现，典型的例子就是链表节点。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span> <span class="title">final</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">using</span> this_type     = Node;</span><br><span class="line">    <span class="keyword">using</span> shared_type   = <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;this_type&gt;;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    shared_type     next;      <span class="comment">// 使用智能指针来指向下一个节点</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> n1 = make_shared&lt;Node&gt;();   <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line"><span class="keyword">auto</span> n2 = make_shared&lt;Node&gt;();   <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line"></span><br><span class="line">assert(n1.use_count() == <span class="number">1</span>);    <span class="comment">// 引用计数为1</span></span><br><span class="line">assert(n2.use_count() == <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">n1-&gt;next = n2;                 <span class="comment">// 两个节点互指，形成了循环引用</span></span><br><span class="line">n2-&gt;next = n1;</span><br><span class="line"></span><br><span class="line">assert(n1.use_count() == <span class="number">2</span>);    <span class="comment">// 引用计数为2</span></span><br><span class="line">assert(n2.use_count() == <span class="number">2</span>);    <span class="comment">// 无法减到0，无法销毁，导致内存泄漏</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="weak-ptr"><a href="#weak-ptr" class="headerlink" title="weak_ptr"></a>weak_ptr</h2><p>weak_ptr顾名思义，功能很“弱”。它专门为打破循环引用而设计，只观察指针，不会增加引用计数（弱引用），但在需要的时候，可以调用成员函数lock()，获取shared_ptr（强引用）。</p>
+<p>刚才的例子里，只要你改用weak_ptr，循环引用的烦恼就会烟消云散：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span> <span class="title">final</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">using</span> this_type     = Node;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注意这里，别名改用weak_ptr</span></span><br><span class="line">    <span class="keyword">using</span> shared_type   = <span class="built_in">std</span>::weak_ptr&lt;this_type&gt;;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    shared_type     next;    <span class="comment">// 因为用了别名，所以代码不需要改动</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> n1 = make_shared&lt;Node&gt;();  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line"><span class="keyword">auto</span> n2 = make_shared&lt;Node&gt;();  <span class="comment">// 工厂函数创建智能指针</span></span><br><span class="line"></span><br><span class="line">n1-&gt;next = n2;             <span class="comment">// 两个节点互指，形成了循环引用</span></span><br><span class="line">n2-&gt;next = n1;</span><br><span class="line"></span><br><span class="line">assert(n1.use_count() == <span class="number">1</span>);    <span class="comment">// 因为使用了weak_ptr，引用计数为1</span></span><br><span class="line">assert(n2.use_count() == <span class="number">1</span>);   <span class="comment">// 打破循环引用，不会导致内存泄漏</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!n1-&gt;next.expired()) &#123;     <span class="comment">// 检查指针是否有效</span></span><br><span class="line">    <span class="keyword">auto</span> ptr = n1-&gt;next.lock();  <span class="comment">// lock()获取shared_ptr</span></span><br><span class="line">    assert(ptr == n2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>智能指针是代理模式的具体应用，它使用RAII技术代理了裸指针，能够自动释放内存，无需程序员干预，所以被称为“智能指针”。</li>
+<li>如果指针是“独占”使用，就应该选择unique_ptr，它为裸指针添加了很多限制，更加安全。</li>
+<li>如果指针是“共享”使用，就应该选择shared_ptr，它的功能非常完善，用法几乎与原始指针一样。</li>
+<li>应当使用工厂函数make_unique()、make_shared()来创建智能指针，强制初始化，而且还能使用auto来简化声明。</li>
+<li>shared_ptr有少量的管理成本，也会引发一些难以排查的错误，所以不要过度使用。</li>
+</ol>
+<p>我还有一个很重要的建议：</p>
+<p>既然你已经理解了智能指针，就尽量不要再使用裸指针、new和delete来操作内存了。</p>
+<p>如果严格遵守这条建议，用好unique_ptr、shared_ptr，那么，你的程序就不可能出现内存泄漏.</p>
+<h2 id="作业"><a href="#作业" class="headerlink" title="作业"></a>作业</h2><ul>
+<li>你觉得unique_ptr和shared_ptr的区别有哪些？列举一下。</li>
+<li>你觉得应该如何在程序里“消灭”new和delete？</li>
+</ul>
+]]></content>
+      <categories>
+        <category>coding</category>
+        <category>c++</category>
+      </categories>
+      <tags>
+        <tag>coding</tag>
+        <tag>c++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>const,volatile,mutable</title>
+    <url>/2020/06/25/const-volatile-mutable/</url>
+    <content><![CDATA[<h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><ul>
+<li>const最好不要放在*的右边,没有太大意义</li>
+<li>const只是语法上的const,实际上用指针是能修改的</li>
+<li>成员函数里面设置为const意味着,里面是个只读操作</li>
+<li>如果想要修改私有变量,但同时函数设置为const,那么就把变量设置为mutable</li>
+</ul>
+<h2 id="mutable"><a href="#mutable" class="headerlink" title="mutable"></a>mutable</h2><p>对于这些有特殊作用的成员变量，你可以给它加上mutable修饰，解除const的限制，让任何成员函数都可以操作它。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoClass</span> <span class="title">final</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">mutable</span> mutex_type  m_mutex;    <span class="comment">// mutable成员变量</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">save_data</span><span class="params">()</span> <span class="keyword">const</span>          <span class="comment">// const成员函数</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// do someting with m_mutex</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h2><p>它表示变量可能会被“不被察觉”地修改，禁止编译器优化，影响性能，应当少用。<br>几乎没啥用</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>1.const</p>
+<p>它是一个类型修饰符，可以给任何对象附加上“只读”属性，保证安全；<br>它可以修饰引用和指针，“const &amp;”可以引用任何类型，是函数入口参数的最佳类型；<br>它还可以修饰成员函数，表示函数是“只读”的，const对象只能调用const成员函数。</p>
+<p>2.volatile</p>
+<p>它表示变量可能会被“不被察觉”地修改，禁止编译器优化，影响性能，应当少用。</p>
+<p>3.mutable</p>
+<p>它用来修饰成员变量，允许const成员函数修改，mutable变量的变化不影响对象的常量性，但要小心不要误用损坏对象。</p>
+<p><img src="https://gitee.com/exarlos/blog_image/raw/master/20200625165916.png" alt="20200625170856"></p>
+]]></content>
+      <categories>
+        <category>coding</category>
+        <category>c++</category>
+      </categories>
+      <tags>
+        <tag>coding</tag>
+        <tag>c++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>TODO</title>
+    <url>/2020/06/25/TODO/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>需要一个todolist来管理我所有需要研究的todo:</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><h3 id="c"><a href="#c" class="headerlink" title="c++"></a>c++</h3><ul>
+<li>引用计数</li>
+<li>Lambda 表达式有何用处？如何使用？ - KE meng的回答 - 知乎<br><a href="https://www.zhihu.com/question/20125256/answer/29733906" target="_blank" rel="noopener">https://www.zhihu.com/question/20125256/answer/29733906</a></li>
+</ul>
+<h3 id="python"><a href="#python" class="headerlink" title="python"></a>python</h3><h2 id="书单"><a href="#书单" class="headerlink" title="书单"></a>书单</h2><ul>
+<li>程序员的自我修养</li>
+<li>设计模式</li>
+<li>teach yourself c++</li>
+</ul>
+<h2 id="课程单"><a href="#课程单" class="headerlink" title="课程单"></a>课程单</h2><ul>
+<li>现代c++30讲</li>
+<li>c++课程(极客)</li>
+<li>设计模式100(极客)</li>
+<li>正则表达式(极客)</li>
+</ul>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><ul>
+<li>花时间研究一下vscode的debug模块</li>
+<li>51cto买的课程</li>
+</ul>
+<h2 id="需要学习的技能"><a href="#需要学习的技能" class="headerlink" title="需要学习的技能"></a>需要学习的技能</h2><ul>
+<li>设计模式</li>
+<li>stl</li>
+<li>正则表达式</li>
+<li>python</li>
+<li>完美消化掉科瑞的内容</li>
+</ul>
+<h2 id="其他杂项"><a href="#其他杂项" class="headerlink" title="其他杂项"></a>其他杂项</h2>]]></content>
+      <categories>
+        <category>TODO</category>
+      </categories>
+      <tags>
+        <tag>TODO</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>lambda用在哪里?</title>
+    <url>/2020/06/25/lambda%E7%94%A8%E5%9C%A8%E5%93%AA%E9%87%8C/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<p>???KE meng<br>???<a href="https://www.zhihu.com/question/20125256/answer/29733906" target="_blank" rel="noopener">https://www.zhihu.com/question/20125256/answer/29733906</a><br>?????<br>??????????????????????????????????</p>
+<p>Lambda,????,python???,C++???????????:???????????????????,??????????,??????,?????????????.??:??();?????(); ??();??????,?????????. ??????????????????.??,???????,???????????. ???????,???X???,???????????????:1.??????2.??????????????3.????,????????+14.????????????…………………….??????????,????????????????????,??,???????,??????????????: ??????.??,??????”??????”???????,??????,????”void ??();”???????,??????,??????????? ?????,?????,????????”??”?????????,?????,????? ???C??,?????????????????,?? void ??( ??* ); ,??????????,??????????.??,?????????? ???! ???????1: ??????,?????????int i=0,????????+1,??,??????int??????,???????,????????int???(???????),????????????????i?+1.??,??????????,?????,?C++????????:class ????? {public:     ?????( ???&amp; );     void ??() { for(….) { ??????() } };     virtual void ??????(??&amp;)=0;};class ????? : public ????? {public:    …………   virtual void ??????(??&amp;) { ++counter; }private:    int counter=0;};???????????,??,??????????,????????????????,??????????????,??????????,????????????.????????????,?????”??????”??operator()??.????????UI???,???????,?????”?????????”??????.???????????????! ????????…….??,????????????,????????????????. ?????????,??C++?lambda,???????????:class ????????? {public:     ?????????( ???&amp; );     template<typename Fun>      void ??(const Fun&amp; fun) { for(…) { fun(????); } };};??,?????lambda???,????????,??”????,????????+1”:///////////////////????????? iter;iter.??(  [](??&amp; a){ ++a.??; }  ) ;///////////////////???????????,??????. ???????,??C++?lambda?????,????????”??????”:///////////////////????????? iter;int counter=0;iter.??(  <a href="??&">&amp;counter</a>{ ++counter; }  ) ;cout&lt;&lt;”?????”&lt;&lt;counter&lt;&lt;”?”&lt;&lt;endl;///////////////////?????! ?……??????,??????.</p>
+]]></content>
+      <categories>
+        <category>coding</category>
+        <category>c++</category>
+      </categories>
+      <tags>
+        <tag>coding</tag>
+        <tag>c++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设计模式001-评判好代码的标准</title>
+    <url>/2020/06/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F001-%E8%AF%84%E5%88%A4%E5%A5%BD%E4%BB%A3%E7%A0%81%E7%9A%84%E6%A0%87%E5%87%86/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<h2 id="02-从那些维度评判代码质量的好坏"><a href="#02-从那些维度评判代码质量的好坏" class="headerlink" title="02-从那些维度评判代码质量的好坏"></a>02-从那些维度评判代码质量的好坏</h2><h3 id="可能的选项"><a href="#可能的选项" class="headerlink" title="可能的选项"></a>可能的选项</h3><p>灵活性（flexibility）、可扩展性（extensibility）、可维护性（maintainability）、可 读性（readability）、可理解性（understandability）、易修改性（changeability）、 可复用（reusability）、可测试性（testability）、模块化（modularity）、高内聚低耦 合（high cohesion loose coupling）、高效（high effciency）、高性能（high performance）、安全性（security）、兼容性（compatibility）、易用性 （usability）、整洁（clean）、清晰（clarity）、简单（simple）、直接 （straightforward）、少即是多（less code is more）、文档详尽（welldocumented）、分层清晰（well-layered）、正确性（correctness、bug free）、健 壮性（robustness）、鲁棒性（robustness）、可用性（reliability）、可伸缩性 （scalability）、稳定性（stability）、优雅（elegant）、好（good）、坏（bad）</p>
+<h3 id="最强用的评价标准"><a href="#最强用的评价标准" class="headerlink" title="最强用的评价标准"></a>最强用的评价标准</h3><ul>
+<li><ol>
+<li>可维护性（maintainability）<br>如果 bug 容易修复，修改、添加功能能够轻松完成，那我们就可以主观地认为代码对我们来说易维护。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>可读性（readability）<br>代码是否符合编码规范、命名是否达意、注释是否详尽、函数是否长短合适、模块划分是否清晰、是否符合高内聚低耦合等等。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>可扩展性（extensibility）代码的可扩展性表示，我们在不修改或少量修改原有代码的情况下，通过扩展的方式添加新的功能代码。说直白点就是，代码预留了一些功能扩展点，你可以把新功能代码，直接插到扩展点上，而不需要因为要添加一个功能而大动干戈，改动大量的原始代码。</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>灵活性（flexibility）<br>当我们添加一个新的功能代码的时候，原有的代码已经预留好了扩展点，我们不需要修改原有的代码，只要在扩展点上添加新的代码即可。这个时候，我们除了可以说代码易扩展，还可以说代码写得好灵活。当我们要实现一个功能的时候，发现原有代码中，已经抽象出了很多底层可以复用的模块、类等代码，我们可以拿来直接使用。这个时候，我们除了可以说代码易复用之外，还可以说代码写得好灵活。当我们使用某组接口的时候，如果这组接口可以应对各种使用场景，满足各种不同的需求，我们除了可以说接口易用之外，还可以说这个接口设计得好灵活或者代码写得好灵活。</li>
+</ol>
+</li>
+<li><ol start="5">
+<li>简洁性（simplicity）<br>思从深而行从简，真正的高手能云淡风轻地用最简单的方法解决最复杂的问题。这也是一个编程老手跟编程新手的本<br>质区别之一。</li>
+</ol>
+</li>
+<li><ol start="6">
+<li>可复用性（reusability）</li>
+</ol>
+</li>
+<li><ol start="7">
+<li>可测试性（testability）</li>
+</ol>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>要写出满足这些评价标准的高质量代码，我们需要掌握一些更加细化、更加能落地的编程方法论，包括面向对象设计思想、设计原则、设计模式、编码规范、重构技巧等。而所有这些编程方法论的最终目的都是为了编写出高质量的代码。比如，面向对象中的继承、多态能让我们写出可复用的代码；编码规范能让我们写出可读性好的代码；设计原则中的单一职责、DRY、基于接口而非实现、里式替换原则等，可以让我们写出可复用、灵活、可读性好、易扩展、易维护的代码；设计模式可以让我们写出易扩展的代码；持续重构可以时刻保持代码的可维护性等等。</p>
+]]></content>
+      <categories>
+        <category>coding</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>coding</tag>
+        <tag>设计模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设计模式002-多态在不同语言中的实现</title>
+    <url>/2020/06/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F002-%E5%A4%9A%E6%80%81%E5%9C%A8%E4%B8%8D%E5%90%8C%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>多态在不同语言中的方式是不一样的.<br>主要分为两类:</p>
+<p>对于多态特性的实现方式，除了利用“继承加方法重写”这种实现方式之外，我们还有其他两种比较常见的的实现方式，一个是利用接口类语法，另一个是利用duck-typing语法。不过，并不是每种编程语言都支持接口类或者duck-typing这两种语法机制，比如C++就不支持接口类语法，而duck-typing只有一些动态语言才支持，比如Python、JavaScript等。</p>
+<h3 id="继承的多态-c"><a href="#继承的多态-c" class="headerlink" title="继承的多态-c++"></a>继承的多态-c++</h3><h3 id="duck-typing"><a href="#duck-typing" class="headerlink" title="duck-typing"></a>duck-typing</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Logger</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">record</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(“I write a log into file.”)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DB</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">record</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(“I insert data into db. ”)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">(recorder)</span>:</span></span><br><span class="line">    recorder.record()</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">demo</span><span class="params">()</span>:</span></span><br><span class="line">    logger = Logger()</span><br><span class="line">    db = DB()</span><br><span class="line">    test(logger)</span><br><span class="line">    test(db)</span><br></pre></td></tr></table></figure>
+
+<p>从这段代码中，我们发现，duck-typing 实现多态的方式非常灵活。Logger 和 DB 两个类没有任何关系，既不是继承关系，也不是接口和实现的关系，但是只要它们都有定义了 record() 方法，就可以被传递到 test() 方法中，在实际运行的时候，执行对应的 record() 方法。</p>
+<p>也就是说，只要两个类具有相同的方法，就可以实现多态，并不要求两个类之间有任何关系，这就是所谓的 duck-typing，是一些动态语言所特有的语法机制。而像 Java 这样的静态语言，通过继承实现多态特性，必须要求两个类之间有继承关系，通过接口实现多态特性，类必须实现对应的接口。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>DynamicArray，才能将SortedDyamicArray传递给DynamicArray。第三个语法机制是编程语言要支持子类可以重写（override）父类中的方法，也就是SortedDyamicArray重写了DynamicArray中的add（）方法。通过这三种语法机制配合在一起，我们就实现了在test（）方法中，子类SortedDyamicArray替换父类DynamicArray，执行子类SortedDyamicArray的add（）方法，也就是实现了多态特性。</p>
+]]></content>
+      <categories>
+        <category>coding</category>
+        <category>c++</category>
+      </categories>
+      <tags>
+        <tag>coding</tag>
+        <tag>c++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>设计模式003-接口vs抽象类</title>
+    <url>/2020/06/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F003-%E6%8E%A5%E5%8F%A3vs%E6%8A%BD%E8%B1%A1%E7%B1%BB/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<h2 id="08-理论五：接口vs抽象类的区别？如何用普通的类模拟抽象类和接口"><a href="#08-理论五：接口vs抽象类的区别？如何用普通的类模拟抽象类和接口" class="headerlink" title="08 | 理论五：接口vs抽象类的区别？如何用普通的类模拟抽象类和接口"></a>08 | 理论五：接口vs抽象类的区别？如何用普通的类模拟抽象类和接口</h2><h2 id="抽象类"><a href="#抽象类" class="headerlink" title="抽象类"></a>抽象类</h2><h3 id="抽象类是什么"><a href="#抽象类是什么" class="headerlink" title="抽象类是什么"></a>抽象类是什么</h3><ul>
+<li>纯虚函数：没有函数体的虚函数</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>&#123;</span></span><br><span class="line">      <span class="keyword">private</span>:</span><br><span class="line">          <span class="keyword">int</span> a;</span><br><span class="line">      <span class="keyword">public</span>:</span><br><span class="line">          <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Print</span><span class="params">()</span> </span>= <span class="number">0</span>;<span class="comment">//纯虚函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>抽象类：包含纯虚函数的类</li>
+<li>只能作为基类来派生新类使用</li>
+<li>不能创建抽象类的对象</li>
+<li>抽象类的指针和引用 -&gt; 由抽象类派生出来的类的对象</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">A a;<span class="comment">//错，A 是抽象类，不能创建对象</span></span><br><span class="line">A *pa；<span class="comment">//ok，可以定义抽象类的指针和引用</span></span><br><span class="line">pa = <span class="keyword">new</span> A；<span class="comment">//错误，A 是抽象类，不能创建对象</span></span><br></pre></td></tr></table></figure>
+
+<p>抽象类中</p>
+<ul>
+<li>在成员函数内可以调用纯虚函数</li>
+<li>在构造函数/析构函数 内部不能使用纯虚函数</li>
+</ul>
+<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h3 id="接口是什么"><a href="#接口是什么" class="headerlink" title="接口是什么"></a>接口是什么</h3><ul>
+<li>接口不能包含属性（也就是成员变量）。</li>
+<li>接口只能声明方法，方法不能包含代码实现。</li>
+<li>类实现接口的时候，必须实现接口中声明的所有方法。</li>
+</ul>
+<h3 id="接口有什么用"><a href="#接口有什么用" class="headerlink" title="接口有什么用"></a>接口有什么用</h3><p>抽象类更多的是为了代码复用，而接口就更侧重于解耦。接口是对行为的一种抽象，相当于一组协议或者契约，你可以联想类比一下API接口。调用者只需要关注抽象的接口，不需要了解具体的实现，具体的实现代码对调用者透明。接口实现了约定和实现相分离，可以降低代码间的耦合性，提高代码的可扩展性。</p>
+<h3 id="接口如何在c-里实现"><a href="#接口如何在c-里实现" class="headerlink" title="接口如何在c++里实现"></a>接口如何在c++里实现</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Strategy</span> &#123;</span> <span class="comment">// 用抽象类模拟接口</span></span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    ~Strategy();</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">algorithm</span><span class="params">()</span></span>=<span class="number">0</span>;</span><br><span class="line">  <span class="keyword">protected</span>:</span><br><span class="line">    Strategy();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>抽象类Strategy没有定义任何属性，并且所有的方法都声明为virtual类型（等同于Java中的abstract关键字），这样，所有的方法都不能有代码实现，并且所有继承这个抽象类的子类，都要实现这些方法。从语法特性上来看，这个抽象类就相当于一个接口。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>抽象类和接口的语法特性抽象类不允许被实例化，只能被继承。它可以包含属性和方法。方法既可以包含代码实现，也可以不包含代码实现。不包含代码实现的方法叫作抽象方法。子类继承抽象类，必须实现抽象类中的所有抽象方法。接口不能包含属性，只能声明方法，方法不能包含代码实现。类实现接口的时候，必须实现接口中声明的所有方法。</li>
+<li>抽象类和接口存在的意义抽象类是对成员变量和方法的抽象，是一种is-a关系，是为了解决代码复用问题。接口仅仅是对方法的抽象，是一种has-a关系，表示具有某一组行为特性，是为了解决解耦问题，隔离接口和具体的实现，提高代码的扩展性。</li>
+<li>抽象类和接口的应用场景区别什么时候该用抽象类？什么时候该用接口？实际上，判断的标准很简单。如果要表示一种is-a的关系，并且是为了解决代码复用问题，我们就用抽象类；如果要表示一种has-a关系，并且是为了解决抽象而非代码复用问题，那我们就用接口。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>coding</category>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>coding</tag>
+        <tag>设计模式</tag>
       </tags>
   </entry>
 </search>

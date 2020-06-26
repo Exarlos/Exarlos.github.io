@@ -79,14 +79,14 @@
 
 
 
-<meta name="description" content="栈">
+<meta name="description" content="[TOC] 栈RAIIRAII的基本用法在析构函数里做必要的清理工作，这就是 RAII 的基本用法。这种清理并不限于释放内存，也可以是：  关闭文件（fstream 的析构就会这么做） 释放同步锁 释放其他重要的系统资源   RAII是为什么(没太明白)C++ 支持将对象存储在栈上面。但是，在很多情况下，对象不能，或不应该，存储在栈上。比如： 对象很大；对象的大小在编译时不能确定；对象是函数的返回">
 <meta property="og:type" content="article">
 <meta property="og:title" content="01-堆,栈,RAII">
 <meta property="og:url" content="http://yoursite.com/2020/06/23/01-%E5%A0%86-%E6%A0%88-RAII/index.html">
 <meta property="og:site_name" content="塔希里亚旅行笔记">
-<meta property="og:description" content="栈">
+<meta property="og:description" content="[TOC] 栈RAIIRAII的基本用法在析构函数里做必要的清理工作，这就是 RAII 的基本用法。这种清理并不限于释放内存，也可以是：  关闭文件（fstream 的析构就会这么做） 释放同步锁 释放其他重要的系统资源   RAII是为什么(没太明白)C++ 支持将对象存储在栈上面。但是，在很多情况下，对象不能，或不应该，存储在栈上。比如： 对象很大；对象的大小在编译时不能确定；对象是函数的返回">
 <meta property="article:published_time" content="2020-06-23T08:22:28.000Z">
-<meta property="article:modified_time" content="2020-06-23T08:50:47.222Z">
+<meta property="article:modified_time" content="2020-06-25T05:55:17.527Z">
 <meta property="article:author" content="Exarlos">
 <meta property="article:tag" content="coding">
 <meta property="article:tag" content="c++">
@@ -363,7 +363,23 @@
       
 
       
-        <h2 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h2>
+        <p>[TOC]</p>
+<h2 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h2><h2 id="RAII"><a href="#RAII" class="headerlink" title="RAII"></a>RAII</h2><h3 id="RAII的基本用法"><a href="#RAII的基本用法" class="headerlink" title="RAII的基本用法"></a>RAII的基本用法</h3><p>在析构函数里做必要的清理工作，这就是 RAII 的基本用法。这种清理并不限于释放内存，也可以是：</p>
+<ul>
+<li>关闭文件（fstream 的析构就会这么做）</li>
+<li>释放同步锁</li>
+<li>释放其他重要的系统资源</li>
+</ul>
+<hr>
+<h3 id="RAII是为什么-没太明白"><a href="#RAII是为什么-没太明白" class="headerlink" title="RAII是为什么(没太明白)"></a>RAII是为什么(没太明白)</h3><p>C++ 支持将对象存储在栈上面。但是，在很多情况下，对象不能，或不应该，存储在栈上。比如：</p>
+<p>对象很大；<br>对象的大小在编译时不能确定；<br>对象是函数的返回值，但由于特殊的原因，不应使用对象的值返回。</p>
+<p>常见情况之一是，在工厂方法或其他面向对象编程的情况下，返回值类型是基类。下面的例子，是对工厂方法的简单演示：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="class"><span class="keyword">class</span> <span class="title">shape_type</span> &#123;</span></span><br><span class="line">  <span class="built_in">circle</span>,</span><br><span class="line">  triangle,</span><br><span class="line">  rectangle,</span><br><span class="line">  …</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">shape</span> &#123;</span> … &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">circle</span> :</span> <span class="keyword">public</span> shape &#123; … &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">triangle</span> :</span> <span class="keyword">public</span> shape &#123; … &#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">rectangle</span> :</span> <span class="keyword">public</span> shape &#123; … &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">shape* <span class="title">create_shape</span><span class="params">(shape_type type)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  …</span><br><span class="line">  <span class="keyword">switch</span> (type) &#123;</span><br><span class="line">  <span class="keyword">case</span> shape_type::<span class="built_in">circle</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">circle</span>(…);</span><br><span class="line">  <span class="keyword">case</span> shape_type::triangle:</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> triangle(…);</span><br><span class="line">  <span class="keyword">case</span> shape_type::rectangle:</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> rectangle(…);</span><br><span class="line">  …</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们怎样才能确保，在使用 create_shape 的返回值时不会发生内存泄漏呢？</p>
+<p>答案就在析构函数和它的栈展开行为上。我们只需要把这个返回值放到一个本地变量里，并确保其析构函数会删除该对象即可。一个简单的实现如下所示：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">shape_wrapper</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="keyword">explicit</span> <span class="title">shape_wrapper</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    shape* ptr = <span class="literal">nullptr</span>)</span></span></span><br><span class="line"><span class="function">    : <span class="title">ptr_</span><span class="params">(ptr)</span> </span>&#123;&#125;</span><br><span class="line">  ~shape_wrapper()</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">delete</span> ptr_;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function">shape* <span class="title">get</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> ptr_; &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">  shape* ptr_;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  …</span><br><span class="line">  <span class="function">shape_wrapper <span class="title">ptr_wrapper</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    create_shape(…))</span></span>;</span><br><span class="line">  …</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -484,7 +500,7 @@
               
                 <a href="/archives%7C%7C%20archive">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -495,7 +511,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -506,7 +522,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -539,7 +555,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈"><span class="nav-number">1.</span> <span class="nav-text">栈</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈"><span class="nav-number">1.</span> <span class="nav-text">栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RAII"><span class="nav-number">2.</span> <span class="nav-text">RAII</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RAII的基本用法"><span class="nav-number">2.1.</span> <span class="nav-text">RAII的基本用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RAII是为什么-没太明白"><span class="nav-number">2.2.</span> <span class="nav-text">RAII是为什么(没太明白)</span></a></li></ol></li></ol></div>
             
 
           </div>

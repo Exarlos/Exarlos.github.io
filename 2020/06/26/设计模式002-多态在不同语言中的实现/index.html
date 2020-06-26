@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="vim,vimgolf," />
+  <meta name="keywords" content="coding,c++," />
 
 
 
@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="vimgolf第一题[TOC]目标是10步 题目-prepend * to every non-blank linehttp:&#x2F;&#x2F;www.vimgolf.com&#x2F;challenges&#x2F;5e4dfcccaa2db400090b66c3 123gem install vimgolfvimgolf setupvimgolf put 5e4dfcccaa2db400090b66c3  Start file">
+<meta name="description" content="[TOC] 说明多态在不同语言中的方式是不一样的.主要分为两类: 对于多态特性的实现方式，除了利用“继承加方法重写”这种实现方式之外，我们还有其他两种比较常见的的实现方式，一个是利用接口类语法，另一个是利用duck-typing语法。不过，并不是每种编程语言都支持接口类或者duck-typing这两种语法机制，比如C++就不支持接口类语法，而duck-typing只有一些动态语言才支持，比如Pyt">
 <meta property="og:type" content="article">
-<meta property="og:title" content="vimgolf001">
-<meta property="og:url" content="http://yoursite.com/2020/05/11/vimgolf001/index.html">
+<meta property="og:title" content="设计模式002-多态在不同语言中的实现">
+<meta property="og:url" content="http://yoursite.com/2020/06/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F002-%E5%A4%9A%E6%80%81%E5%9C%A8%E4%B8%8D%E5%90%8C%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="塔希里亚旅行笔记">
-<meta property="og:description" content="vimgolf第一题[TOC]目标是10步 题目-prepend * to every non-blank linehttp:&#x2F;&#x2F;www.vimgolf.com&#x2F;challenges&#x2F;5e4dfcccaa2db400090b66c3 123gem install vimgolfvimgolf setupvimgolf put 5e4dfcccaa2db400090b66c3  Start file">
-<meta property="article:published_time" content="2020-05-11T06:19:26.000Z">
-<meta property="article:modified_time" content="2020-06-23T03:21:20.351Z">
+<meta property="og:description" content="[TOC] 说明多态在不同语言中的方式是不一样的.主要分为两类: 对于多态特性的实现方式，除了利用“继承加方法重写”这种实现方式之外，我们还有其他两种比较常见的的实现方式，一个是利用接口类语法，另一个是利用duck-typing语法。不过，并不是每种编程语言都支持接口类或者duck-typing这两种语法机制，比如C++就不支持接口类语法，而duck-typing只有一些动态语言才支持，比如Pyt">
+<meta property="article:published_time" content="2020-06-26T03:37:46.000Z">
+<meta property="article:modified_time" content="2020-06-26T03:50:40.408Z">
 <meta property="article:author" content="Exarlos">
-<meta property="article:tag" content="vim">
-<meta property="article:tag" content="vimgolf">
+<meta property="article:tag" content="coding">
+<meta property="article:tag" content="c++">
 <meta name="twitter:card" content="summary">
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2020/05/11/vimgolf001/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/06/26/设计模式002-多态在不同语言中的实现/"/>
 
 
 
 
 
-  <title>vimgolf001 | 塔希里亚旅行笔记</title>
+  <title>设计模式002-多态在不同语言中的实现 | 塔希里亚旅行笔记</title>
   
 
 
@@ -263,7 +263,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/11/vimgolf001/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F002-%E5%A4%9A%E6%80%81%E5%9C%A8%E4%B8%8D%E5%90%8C%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Exarlos">
@@ -280,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">vimgolf001</h1>
+          <h1 class="post-title" itemprop="name headline">设计模式002-多态在不同语言中的实现</h1>
         
 
         <div class="post-meta">
@@ -292,8 +292,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-11T14:19:26+08:00">
-                2020-05-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-26T11:37:46+08:00">
+                2020-06-26
               </time>
             
 
@@ -315,8 +315,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/vim/" itemprop="url" rel="index">
-                    <span itemprop="name">vim</span>
+                  <a href="/categories/coding/" itemprop="url" rel="index">
+                    <span itemprop="name">coding</span>
                   </a>
                 </span>
 
@@ -326,8 +326,8 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/vim/vimgolf/" itemprop="url" rel="index">
-                    <span itemprop="name">vimgolf</span>
+                  <a href="/categories/coding/c/" itemprop="url" rel="index">
+                    <span itemprop="name">c++</span>
                   </a>
                 </span>
 
@@ -363,59 +363,14 @@
       
 
       
-        <h1 id="vimgolf第一题"><a href="#vimgolf第一题" class="headerlink" title="vimgolf第一题"></a>vimgolf第一题</h1><p>[TOC]<br>目标是10步</p>
-<h2 id="题目"><a href="#题目" class="headerlink" title="题目-"></a>题目-</h2><p>prepend * to every non-blank line<br><a href="http://www.vimgolf.com/challenges/5e4dfcccaa2db400090b66c3" target="_blank" rel="noopener">http://www.vimgolf.com/challenges/5e4dfcccaa2db400090b66c3</a></p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gem install vimgolf</span><br><span class="line">vimgolf <span class="built_in">setup</span></span><br><span class="line">vimgolf <span class="built_in">put</span> <span class="number">5e4</span>dfcccaa2db400090b66c3</span><br></pre></td></tr></table></figure>
+        <p>[TOC]</p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>多态在不同语言中的方式是不一样的.<br>主要分为两类:</p>
+<p>对于多态特性的实现方式，除了利用“继承加方法重写”这种实现方式之外，我们还有其他两种比较常见的的实现方式，一个是利用接口类语法，另一个是利用duck-typing语法。不过，并不是每种编程语言都支持接口类或者duck-typing这两种语法机制，比如C++就不支持接口类语法，而duck-typing只有一些动态语言才支持，比如Python、JavaScript等。</p>
+<h3 id="继承的多态-c"><a href="#继承的多态-c" class="headerlink" title="继承的多态-c++"></a>继承的多态-c++</h3><h3 id="duck-typing"><a href="#duck-typing" class="headerlink" title="duck-typing"></a>duck-typing</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Logger</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">record</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(“I write a log into file.”)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DB</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">record</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(“I insert data into db. ”)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">(recorder)</span>:</span></span><br><span class="line">    recorder.record()</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">demo</span><span class="params">()</span>:</span></span><br><span class="line">    logger = Logger()</span><br><span class="line">    db = DB()</span><br><span class="line">    test(logger)</span><br><span class="line">    test(db)</span><br></pre></td></tr></table></figure>
 
-<h2 id="Start-file"><a href="#Start-file" class="headerlink" title="Start file"></a>Start file</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Start file</span><br><span class="line"></span><br><span class="line">This is a</span><br><span class="line">very short</span><br><span class="line"></span><br><span class="line">file, but it is</span><br><span class="line">still</span><br><span class="line">full</span><br><span class="line"></span><br><span class="line">of</span><br><span class="line"></span><br><span class="line">surpises.</span><br></pre></td></tr></table></figure>
-
-<h2 id="End-file"><a href="#End-file" class="headerlink" title="End file"></a>End file</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">*This is a</span><br><span class="line">*very short</span><br><span class="line"></span><br><span class="line">*file, but it is</span><br><span class="line">*still</span><br><span class="line">*full</span><br><span class="line"></span><br><span class="line">*of</span><br><span class="line"></span><br><span class="line">*surpises.</span><br></pre></td></tr></table></figure>
-
-<h2 id="思路和过程"><a href="#思路和过程" class="headerlink" title="思路和过程"></a>思路和过程</h2><ul>
-<li>vim退出</li>
-</ul>
-<p><strong>vim 保存退出用ZZ<br>或者:wq<br>:q是不保存退出<br>:q!放弃处理结果</strong></p>
-<ol>
-<li>第一次最差是20,没什么可说的</li>
-<li>第二次使用了视图模式ctrl+v然后G到最后,然后I来编辑-18步<br><code>&lt;C-V&gt;GI*&lt;Esc&gt;2jx4jx2jx:wq&lt;CR&gt;</code></li>
-<li><code>&lt;C-V&gt;GI*&lt;Esc&gt;3Gx7G.9G.ZZ</code> 16步骤</li>
-<li><code>:%s/^\ze\w/*&lt;CR&gt;ZZ</code> - 15步</li>
-<li><code>:%s/^\ze./*&lt;CR&gt;ZZ</code> - 14</li>
-<li>:<code>%s/^./*&amp;/&lt;CR&gt;ZZ</code> - 13</li>
-<li><code>:%s/^./*&amp;&lt;CR&gt;ZZ</code> - 12</li>
-<li><code>:%s/./*&amp;&lt;CR&gt;ZZ</code> - 11</li>
-<li><code>&lt;C-V&gt;GyPgvr*ZZ</code> - 冠军</li>
-</ol>
-<h2 id="答案"><a href="#答案" class="headerlink" title="答案"></a>答案</h2><ol>
-<li>第二次使用了视图模式ctrl+v然后G到最后,然后I来编辑-18步<br><code>&lt;C-V&gt;GI*&lt;Esc&gt;2jx4jx2jx:wq&lt;CR&gt;</code></li>
-<li><code>&lt;C-V&gt;GI*&lt;Esc&gt;3Gx7G.9G.ZZ</code> 16步骤</li>
-<li><code>:%s/^\ze\w/*&lt;CR&gt;ZZ</code> - 15步</li>
-<li><code>:%s/^\ze./*&lt;CR&gt;ZZ</code> - 14</li>
-<li>:<code>%s/^./*&amp;/&lt;CR&gt;ZZ</code> - 13</li>
-<li><code>:%s/^./*&amp;&lt;CR&gt;ZZ</code> - 13</li>
-<li><code>:%s/./*&amp;&lt;CR&gt;ZZ</code> - 11</li>
-<li><code>&lt;C-V&gt;GyPgvr*ZZ</code> - 冠军 10</li>
-</ol>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>三种视图模式</p>
-<p>字符选择模式　　v</p>
-<p>行选择模式　　　shift-v</p>
-<p>块选择模式　　　ctrl-v</p>
-<p>帮助　　加前缀v_，如 :help v_d</p>
-<p>在其中一种模式下可以用直接用上面的命令切换到另一模式</p>
-<p>在视图模式下编辑</p>
-<p>d　　删除选中的字符　　D　　删除选中字符的行</p>
-<p>y，c命令同理</p>
-<p>J　　将选中行合成一行，行这间用空格分隔　　gJ　　连接选中行并无空格分隔</p>
-<blockquote>
-<p>　将选中行缩进一个shiftwidth　　反之 &lt;</p>
-</blockquote>
-<p>在块选择模式下</p>
-<p>I　　插入，并且在<ESC>后，其他选中行的相应位置也会插入相同内容</p>
-<p>c，A命令有相类似的作用</p>
-<p>r　　将选中块中的字符全部替代为某个字符</p>
-<blockquote>
-<p>　将块向右移动一个shiftwidth　　反之 &lt;，如果空格数不足一个shiftwidth，它尽可能的移动</p>
-</blockquote>
+<p>从这段代码中，我们发现，duck-typing 实现多态的方式非常灵活。Logger 和 DB 两个类没有任何关系，既不是继承关系，也不是接口和实现的关系，但是只要它们都有定义了 record() 方法，就可以被传递到 test() 方法中，在实际运行的时候，执行对应的 record() 方法。</p>
+<p>也就是说，只要两个类具有相同的方法，就可以实现多态，并不要求两个类之间有任何关系，这就是所谓的 duck-typing，是一些动态语言所特有的语法机制。而像 Java 这样的静态语言，通过继承实现多态特性，必须要求两个类之间有继承关系，通过接口实现多态特性，类必须实现对应的接口。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>DynamicArray，才能将SortedDyamicArray传递给DynamicArray。第三个语法机制是编程语言要支持子类可以重写（override）父类中的方法，也就是SortedDyamicArray重写了DynamicArray中的add（）方法。通过这三种语法机制配合在一起，我们就实现了在test（）方法中，子类SortedDyamicArray替换父类DynamicArray，执行子类SortedDyamicArray的add（）方法，也就是实现了多态特性。</p>
 
       
     </div>
@@ -433,9 +388,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/vim/" rel="tag"># vim</a>
+            <a href="/tags/coding/" rel="tag"># coding</a>
           
-            <a href="/tags/vimgolf/" rel="tag"># vimgolf</a>
+            <a href="/tags/c/" rel="tag"># c++</a>
           
         </div>
       
@@ -448,14 +403,18 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2020/06/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F001-%E8%AF%84%E5%88%A4%E5%A5%BD%E4%BB%A3%E7%A0%81%E7%9A%84%E6%A0%87%E5%87%86/" rel="next" title="设计模式001-评判好代码的标准">
+                <i class="fa fa-chevron-left"></i> 设计模式001-评判好代码的标准
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/05/13/vimgolf002/" rel="prev" title="vimgolf002">
-                vimgolf002 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F003-%E6%8E%A5%E5%8F%A3vs%E6%8A%BD%E8%B1%A1%E7%B1%BB/" rel="prev" title="设计模式003-接口vs抽象类">
+                设计模式003-接口vs抽象类 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -588,7 +547,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#vimgolf第一题"><span class="nav-number">1.</span> <span class="nav-text">vimgolf第一题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目"><span class="nav-number">1.1.</span> <span class="nav-text">题目-</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Start-file"><span class="nav-number">1.2.</span> <span class="nav-text">Start file</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#End-file"><span class="nav-number">1.3.</span> <span class="nav-text">End file</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思路和过程"><span class="nav-number">1.4.</span> <span class="nav-text">思路和过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#答案"><span class="nav-number">1.5.</span> <span class="nav-text">答案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.6.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#说明"><span class="nav-number">1.</span> <span class="nav-text">说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#继承的多态-c"><span class="nav-number">1.1.</span> <span class="nav-text">继承的多态-c++</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#duck-typing"><span class="nav-number">1.2.</span> <span class="nav-text">duck-typing</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
